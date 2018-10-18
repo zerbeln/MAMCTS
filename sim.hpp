@@ -27,15 +27,12 @@ public:
     void initialize_parameters(multi_agent *map, monte_carlo *mcp);
     void cred_evals(multi_agent *map, multi_tree* tp, monte_carlo *mcp);
     void system_rollout(multi_agent *map, multi_tree* tp, monte_carlo *mcp);
-    void check_goal_conditions(multi_agent *map); //Check if all agents have made it to a goal
-    void print_tree(multi_tree *tp);
-
     
     //Credit Evaluation
     vector <int> node_vec; //Keeps track of current nodes during credit evaluations
     vector <int> dif_node_vec; //Keeps Track of where each agent's rollout ends in cred eval
     vector <double> agent_rewards; //Tracks the individual rewards of agents in the system
-    vector <bool> ag_sim;
+    vector <bool> ag_in_play; //Tracks if an agent is still in play or not
     vector <int> end_lev;
     void reset_all_agents(multi_agent *map, multi_tree *tp);
     void calculate_local(multi_agent *map, monte_carlo *mcp, multi_tree *tp);
@@ -45,24 +42,21 @@ public:
     
     //Paramaters
     int credit_type; //Used to determine which type of credit eval to run
-    int x_dim;
-    int y_dim;
-    int learn_its; //Tracks the number of learning episodes
+    int x_dim; //Max x-dimension of gridworld
+    int y_dim; //max y-dimension of gridworld
     int n_agents; //Number of agents and goals
-    double final_lev;
     int max_lev;
     
-    bool gridworld_finished;
+    bool all_goals_captured;
     bool goal_check;
     bool agents_at_goals;
     
     //Rewards and Penalties
-    double l_reward; //Local Reward
-    double g_reward; //Global Reward
-    double d_reward; //Difference Reward
-    double goal_reward;
-    double penalty;
-    double step_penalty;
+    double g_reward; //Global reward
+    double sys_reward; //G_reward but used for data collection and not evals
+    double goal_reward; //Reward for reaching a goal
+    double penalty; //Reward for taking an already captured goal
+    double step_penalty; //Reward for taking a step without reaching a goal
     double num;
 };
 

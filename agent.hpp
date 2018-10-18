@@ -47,11 +47,10 @@ public:
     //Goal Functions
     void assign_goal_coordinates();
     void check_goal_coordinates(int n, double xc, double yc);
-    void check_goal_status(int gn); //Checks if goal is still in play
     
     //Agent Functions
     void assign_agent_coordinates();
-    void check_agent_coordinates(int n, double x, double y);
+    void check_agent_coordinates(int n);
     void agent_move(int n, int act); //Agent moves based on information collects from MCTS and Reward Evaluation
     void check_agent_status(int an);
     
@@ -60,8 +59,7 @@ public:
     int xdim; //X dimension of Gridworld
     int ydim; //Y dimension of Gridworld
     bool unique_pos; //Detects if an agent or a goal has been stacked on another agent or goal
-    bool goal_in_play; //Indicates if a goal has been captured or not
-    bool agent_in_play; //Indicates if agent has captrueed a goal or not
+    bool agent_at_goal; //Indicates if agent has captrueed a goal or not
 };
 
 #endif /* agent_hpp */

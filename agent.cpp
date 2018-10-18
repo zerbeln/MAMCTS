@@ -28,14 +28,14 @@ void multi_agent::create_config_list(int max_a, int xd, int yd, int nstat){ //ns
     ac_x.close(); ac_y.close(); gc_x.close(); gc_y.close();
 }
 
-void multi_agent::create_start_vecs(int stat, int n, int max_a){ //n = current number of agents, max_a = maximum number of agents, stat = current stat run
-    n_agents = n;
+void multi_agent::create_start_vecs(int stat, int n, int max_a){ //max_a = maximum number of agents, stat = current stat run
+    n_agents = n; //n is the current number of agents
     agent a; goal g;
     for(int i = 0; i < n_agents; i++){
         agent_start_pos.push_back(a);
         goal_start_pos.push_back(g);
-        agent_start_pos.at(i) = agent_list.at(max_a*stat + i); //Keeps track of agent intiial position for the stat run
-        goal_start_pos.at(i) = goal_list.at(max_a*stat + i); //Keeps track of goal position for the stat run
+        agent_start_pos.at(i) = agent_list.at(max_a*stat + i); //Keeps track of agent intial positions
+        goal_start_pos.at(i) = goal_list.at(max_a*stat + i); //Keeps track of goal positions
     }
 }
 
@@ -47,7 +47,7 @@ void multi_agent::assign_agent_coordinates(){
     for(int i = 0; i < n_agents; i++){
         x = agent_vec.at(i).agent_x;
         y = agent_vec.at(i).agent_y;
-        check_agent_coordinates(i, x ,y);
+        check_agent_coordinates(i);
         assert(unique_pos == true);
     }
 }
@@ -56,22 +56,22 @@ void multi_agent::agent_move(int n, int act){ //Agent Number, Action
     double ax, ay;
     ax = agent_vec.at(n).agent_x;
     ay = agent_vec.at(n).agent_y;
-    assert(act <= 4);
-    assert(act >= 0);
+    //assert(act <= 4);
+    //assert(act >= 0);
     
-    if(act == 0){
+    if(act == 0){ //Move "left"
         ax--;
     }
-    if(act == 1){
+    if(act == 1){ //Move "up"
         ay++;
     }
-    if(act == 2){
+    if(act == 2){ //Move "down"
         ay--;
     }
-    if(act == 3){
+    if(act == 3){ //Move "right"
         ax++;
     }
-    if(act == 4){
+    if(act == 4){ //Do not move
         ax = agent_vec.at(n).agent_x;
         ay = agent_vec.at(n).agent_y;
     }
@@ -79,12 +79,14 @@ void multi_agent::agent_move(int n, int act){ //Agent Number, Action
     agent_vec.at(n).agent_y = ay;
 }
 
-void multi_agent::check_agent_coordinates(int n, double x, double y){
-    unique_pos = true;
+void multi_agent::check_agent_coordinates(int n){
+    unique_pos = true; double x, y;
+    x = agent_vec.at(n).agent_x;
+    y = agent_vec.at(n).agent_y;
     for(int i = 0; i < n_agents; i++){ //Check agent coordinates against other agent coordinates
         if(i != n){
             if(x == agent_vec.at(i).agent_x && y == agent_vec.at(i).agent_y){
-                unique_pos = false;
+                unique_pos = false; //Checks to see if two agents exist in the same state
                 break;
             }
         }
@@ -96,10 +98,10 @@ void multi_agent::check_agent_status(int an){ //Checks if agent is at  goal
     x = agent_vec.at(an).agent_x;
     y = agent_vec.at(an).agent_y;
     
-    agent_in_play = true;
+    agent_at_goal = false;
     for(int i = 0; i < n_agents; i++){
         if(x == goal_vec.at(i).goal_x && y == goal_vec.at(i).goal_y){ //If agent is at a goal, it is no longer in play
-            agent_in_play = false;
+            agent_at_goal = true;
             break;
         }
     }
@@ -109,8 +111,8 @@ void multi_agent::check_agent_status(int an){ //Checks if agent is at  goal
 void multi_agent::assign_goal_coordinates(){
     double x, y;
     goal_vec = goal_start_pos;
-    //Check to make sure no goals are stacked
-    for(int i = 0; i < n_agents; i++){
+
+    for(int i = 0; i < n_agents; i++){ //Goals cannot cohabit the same state in Gridworld
         x = goal_vec.at(i).goal_x;
         y = goal_vec.at(i).goal_y;
         check_goal_coordinates(i, x, y);
@@ -123,25 +125,13 @@ void multi_agent::check_goal_coordinates(int n, double xc, double yc){ //Goal nu
     for(int i = 0; i < n_agents; i++){ //Check goal coordinates against other goal coordinates and agent coordinates
         if(i != n){
             if(xc == goal_vec.at(i).goal_x && yc == goal_vec.at(i).goal_y){
-                unique_pos = false;
+                unique_pos = false; //Goals cannot cohabit the same state in Gridworld
                 break;
             }
         }
-        if(xc == agent_vec.at(i).agent_x && yc == agent_vec.at(i).agent_y){ //Goal cannot start out at same position as agent
-            unique_pos = false;
+        if(xc == agent_vec.at(i).agent_x && yc == agent_vec.at(i).agent_y){
+            unique_pos = false; //Goal cannot start out at same position as agent
             break;
-        }
-    }
-}
-
-void multi_agent::check_goal_status(int gn){
-    double gx, gy;
-    gx = goal_vec.at(gn).goal_x;
-    gy = goal_vec.at(gn).goal_y;
-    goal_in_play = true;
-    for(int i = 0; i < n_agents; i++){
-        if(gx == agent_vec.at(i).agent_x && gy == agent_vec.at(i).agent_y){
-            goal_in_play = false;
         }
     }
 }
