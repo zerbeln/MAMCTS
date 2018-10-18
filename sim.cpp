@@ -171,7 +171,6 @@ void gridworld::calculate_difference(multi_agent *map, monte_carlo *mcp, multi_t
 void gridworld::system_rollout(multi_agent *map, multi_tree *tp, monte_carlo *mcp){
     int act, count; sys_reward = 0;
     reset_all_agents(map, tp); //reset agents to starting positions
-
     for(int i = 1; i < max_lev; i++){ //Each Agent takes a step if able
         count = 0;
         for(int aa = 0; aa < n_agents; aa++){
@@ -198,15 +197,19 @@ void gridworld::system_rollout(multi_agent *map, multi_tree *tp, monte_carlo *mc
                     map->check_agent_status(a);
                     map->check_agent_coordinates(a);
                     if(map->agent_at_goal == true && map->unique_pos == true){ //Agent at uncaptured goal
-                        sys_reward += goal_reward;
+                        if(ag_in_play.at(a) == true){
+                            sys_reward += goal_reward;
+                        }
                         ag_in_play.at(a) = false;
                     }
                     if(map->agent_at_goal == true && map->unique_pos == false){ //Agent at captured goal
-                        sys_reward += penalty;
+                        if(ag_in_play.at(a) == true){
+                            sys_reward += penalty;
+                        }
                         ag_in_play.at(a) = false;
                     }
-                    if(map->agent_at_goal == false){
-                        sys_reward += step_penalty;
+                    if(map->agent_at_goal == false && ag_in_play.at(a) == true){
+                        //sys_reward += step_penalty;
                     }
                 }
             }

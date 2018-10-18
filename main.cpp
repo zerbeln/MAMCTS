@@ -47,7 +47,7 @@ int main() {
     
     //Rewards and Penalties
     g.goal_reward = 100; //Reward for reaching an unclaimed goal
-    g.penalty = -1; //Penalty for reaching a claimed goal
+    g.penalty = 0; //Penalty for reaching a claimed goal
     mcts.rollout_reward = 1; //Reward received during MCTS rollout for discovering a goal
     g.step_penalty = -1; //Cost of each step taken by an agent in Gridworld
 
