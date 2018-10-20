@@ -208,9 +208,6 @@ void gridworld::system_rollout(multi_agent *map, multi_tree *tp, monte_carlo *mc
                         }
                         ag_in_play.at(a) = false;
                     }
-                    if(map->agent_at_goal == false && ag_in_play.at(a) == true){
-                        //sys_reward += step_penalty;
-                    }
                 }
             }
         }

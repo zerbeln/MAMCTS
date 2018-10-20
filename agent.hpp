@@ -47,6 +47,7 @@ public:
     //Goal Functions
     void assign_goal_coordinates();
     void check_goal_coordinates(int n, double xc, double yc);
+    int record_goal_captures();
     
     //Agent Functions
     void assign_agent_coordinates();

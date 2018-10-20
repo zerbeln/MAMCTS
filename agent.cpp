@@ -56,8 +56,6 @@ void multi_agent::agent_move(int n, int act){ //Agent Number, Action
     double ax, ay;
     ax = agent_vec.at(n).agent_x;
     ay = agent_vec.at(n).agent_y;
-    //assert(act <= 4);
-    //assert(act >= 0);
     
     if(act == 0){ //Move "left"
         ax--;
@@ -134,4 +132,19 @@ void multi_agent::check_goal_coordinates(int n, double xc, double yc){ //Goal nu
             break;
         }
     }
+}
+
+int multi_agent::record_goal_captures(){
+    int n_captured; n_captured = 0; double x,y;
+    for(int i = 0; i < n_agents; i++){
+        x = goal_vec.at(i).goal_x;
+        y = goal_vec.at(i).goal_y;
+        for(int j = 0; j < n_agents; j++){
+            if(x == agent_vec.at(j).agent_x && y == agent_vec.at(j).agent_y){
+                n_captured += 1;
+                break;
+            }
+        }
+    }
+    return n_captured;
 }

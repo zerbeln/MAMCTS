@@ -43,7 +43,7 @@ int main() {
     mcp->rollout_steps = 20;//Number of rollout moves
     gp->max_lev = g.x_dim + g.y_dim;
     mcp->max_lev = g.x_dim + g.y_dim; //Cutoff point in tree where tree cannot expand any further
-    int success_count = 0; //Counts the number of successful runs (all goals captured)
+    int success_count; //Counts the number of successful runs (all goals captured)
     
     //Rewards and Penalties
     g.goal_reward = 100; //Reward for reaching an unclaimed goal
@@ -56,7 +56,6 @@ int main() {
         cout << "Credit Eval: " << c << endl;
         g.credit_type = c;
         for(g.n_agents = starting_agents; g.n_agents <= max_agents;){
-            success_count = 0;
             for(int s = 0; s < stat_runs; s++){ //Run tests for specific number of stat runs
                 m.create_start_vecs(s, g.n_agents, max_agents);
                 g.initialize_parameters(map, mcp);
@@ -72,15 +71,15 @@ int main() {
                     //Check to see if agents have arrived at goals
                     g.system_rollout(map, tp, mcp);
                     g.all_goals_captured = true;
+                    if(its == (max_run-1)){
+                        success_count = m.record_goal_captures(); //Record number of goals captured in final iteration
+                    }
                     for(int anum = 0; anum < g.n_agents; anum++){
                         m.check_agent_status(anum);
                         m.check_agent_coordinates(anum);
                         if(m.agent_at_goal == false or m.unique_pos == false){
                             g.all_goals_captured = false;
                         }
-                    }
-                    if(g.all_goals_captured == true && its == (max_run-1)){
-                        success_count += 1; //Counts the number of successes of the final learned policy
                     }
                     g.reset_all_agents(map, tp);
                     if(g.n_agents == max_agents){ //Record system reward (only for max agents)
