@@ -27,7 +27,7 @@ G_rewards = mean(G_sysr);
 L_rewards = mean(L_sysr);
 
 %Standard deviation
-spacing = 5;
+spacing = 10;
 err_Dsys = zeros(1,max_runs/spacing);
 err_Gsys = zeros(1,max_runs/spacing);
 err_Lsys = zeros(1,max_runs/spacing);
@@ -68,35 +68,33 @@ end
 
 %% Plots
 %MAMCTS Learning Curve------------------------------------------------
-plot(X, D_rewards, 'k:+', 'Linewidth', 2) %Difference Evals
+plot(X, D_rewards, 'k:s', 'Linewidth', 2) %Difference Evals
 hold on
-plot(X, G_rewards, 'g--o', 'Linewidth', 2) %Global Evals
-plot(X, L_rewards, 'b-.s', 'Linewidth', 2) %Local Evals
-errorbar(X, D_rewards, err_Dsys, 'k', 'Linewidth', 2)
-errorbar(X, G_rewards, err_Gsys, 'g', 'Linewidth', 2)
-errorbar(X, L_rewards, err_Lsys, 'b', 'Linewidth', 2)
+plot(X, G_rewards, 'g:^', 'Linewidth', 2) %Global Evals
+plot(X, L_rewards, 'b:o', 'Linewidth', 2) %Local Evals
+errorbar(X, D_rewards, err_Dsys, 'k', 'Linewidth', 2, 'markersize', 5)
+errorbar(X, G_rewards, err_Gsys, 'g', 'Linewidth', 2, 'markersize', 5)
+errorbar(X, L_rewards, err_Lsys, 'b', 'Linewidth', 2, 'markersize', 5)
 set(gca, 'fontsize', 12)
 xlim([0,200])
-xlabel('Iterations', 'FontSize', 18, 'FontWeight', 'bold')
-ylabel('Average System Reward', 'FontSize', 18, 'FontWeight', 'bold')
-title('Learning Curve', 'FontSize', 18, 'FontWeight', 'bold')
+xlabel('Generations', 'FontSize', 18, 'FontWeight', 'bold')
+ylabel('System Reward G(Z)', 'FontSize', 18, 'FontWeight', 'bold')
 lgd = legend('Difference', 'Global', 'Local');
 lgd.FontSize = 14;
 
 %MAMCTS Success Rate-------------------------------------------------------
 n_agents = [starting_agents:increment:max_agents];
 figure()
-plot(n_agents, D_success, 'k:+', 'Linewidth', 2) %Difference Evals
+plot(n_agents, D_success, 'k:s', 'Linewidth', 2, 'markersize', 10) %Difference Evals
 hold on
-plot(n_agents, G_success, 'g--o', 'Linewidth', 2) %Global Evals
-plot(n_agents, L_success, 'b-.s', 'Linewidth', 2) %Local Evals
+plot(n_agents, G_success, 'g:^', 'Linewidth', 2, 'markersize', 10) %Global Evals
+plot(n_agents, L_success, 'b:o', 'Linewidth', 2, 'markersize', 10) %Local Evals
 errorbar(n_agents, D_success, err_Drate, 'k', 'Linewidth', 2)
 errorbar(n_agents, G_success, err_Grate, 'g', 'Linewidth', 2)
 errorbar(n_agents, L_success, err_Lrate, 'b', 'Linewidth', 2)
 set(gca,'xtick', xaxis)
 set(gca, 'fontsize', 12)
 xlabel('Number of Agents', 'FontSize', 18, 'FontWeight', 'bold')
-ylabel('Goals Captured (%)', 'FontSize', 18, 'FontWeight', 'bold')
-title('Goal Capture Rate', 'FontSize', 18, 'FontWeight', 'bold')
+ylabel('Goal Capture Rate', 'FontSize', 18, 'FontWeight', 'bold')
 lgd = legend('Difference', 'Global', 'Local');
 lgd.FontSize = 14;
