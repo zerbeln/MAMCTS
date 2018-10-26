@@ -113,15 +113,13 @@ void multi_agent::create_config_list(int max_a){
     ac_x.open("agent_x_coords.txt"); ac_y.open("agent_y_coords.txt"); //txt files which store agent coordinates
     gc_x.open("goal_x_coords.txt"); gc_y.open("goal_y_coords.txt"); //txt files which store goal coordinates
     
+	create_agent_vec(max_a, x_dim, y_dim);
+    create_goal_vec();
     for(int j = 0; j < n_configs; j++){ //Maximum number of configurations
-        create_agent_vec(max_a, x_dim, y_dim);
-        create_goal_vec();
         for(int k = 0; k < max_a; k++){ //Maximum number of agents
             ac_x << agent_vec.at(k).agent_x << "\n"; ac_y << agent_vec.at(k).agent_y << "\n";
             gc_x << goal_vec.at(k).goal_x << "\n"; gc_y << goal_vec.at(k).goal_y << "\n";
         }
-        agent_vec.clear();
-        goal_vec.clear();
     }
     ac_x.close(); ac_y.close(); gc_x.close(); gc_y.close();
 }
