@@ -55,7 +55,6 @@ public:
     double g_reward; //Global reward
     double sys_reward; //G_reward but used for data collection and not evals
     double goal_reward; //Reward for reaching a goal
-    double penalty; //Reward for taking an already captured goal
     double step_penalty; //Reward for taking a step without reaching a goal
     double num;
 };

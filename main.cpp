@@ -39,15 +39,14 @@ int main() {
     int max_agents = 6; //Maximum number of agents to be tested
     g.x_dim = 5; //Maximum X Dimension
     g.y_dim = 5; //Maximum Y Dimension
-    mcp->epsilon = 7; //UCB1 exploration constant (0 = greedy action selection)
-    mcp->rollout_steps = 20;//Number of rollout moves
+    mcp->epsilon = 10; //UCB1 exploration constant (0 = greedy action selection)
+    mcp->rollout_steps = 15;//Number of rollout moves
     gp->max_lev = g.x_dim + g.y_dim;
     mcp->max_lev = g.x_dim + g.y_dim; //Cutoff point in tree where tree cannot expand any further
     int success_count; //Counts the number of successful runs (all goals captured)
     
     //Rewards and Penalties
     g.goal_reward = 100; //Reward for reaching an unclaimed goal
-    g.penalty = 0; //Penalty for reaching a claimed goal
     mcts.rollout_reward = 1; //Reward received during MCTS rollout for discovering a goal
     g.step_penalty = -1; //Cost of each step taken by an agent in Gridworld
 
@@ -70,16 +69,8 @@ int main() {
                     
                     //Check to see if agents have arrived at goals
                     g.system_rollout(map, tp, mcp);
-                    g.all_goals_captured = true;
                     if(its == (max_run-1)){
                         success_count = m.record_goal_captures(); //Record number of goals captured in final iteration
-                    }
-                    for(int anum = 0; anum < g.n_agents; anum++){
-                        m.check_agent_status(anum);
-                        m.check_agent_coordinates(anum);
-                        if(m.agent_at_goal == false or m.unique_pos == false){
-                            g.all_goals_captured = false;
-                        }
                     }
                     g.reset_all_agents(map, tp);
                     if(g.n_agents == max_agents){ //Record system reward (only for max agents)
@@ -89,19 +80,13 @@ int main() {
                     }
                 }
                 if(g.n_agents == max_agents){ //Record system reward (only for max agents)
-                        if(c == 1){L_sysr << "\n";}
-                        if(c == 2){G_sysr << "\n";}
-                        if(c == 3){D_sysr << "\n";}
+                    if(c == 1){L_sysr << "\n";}
+                    if(c == 2){G_sysr << "\n";}
+                    if(c == 3){D_sysr << "\n";}
                 }
-                if(c == 1){
-                    L_succ << success_count << "\t";
-                }
-                if(c == 2){
-                    G_succ << success_count << "\t";
-                }
-                if(c == 3){
-                    D_succ << success_count << "\t";
-                }
+                if(c == 1){L_succ << success_count << "\t";}
+                if(c == 2){G_succ << success_count << "\t";}
+                if(c == 3){D_succ << success_count << "\t";}
                 g.clear_all_vectors(map, mcp, tp); //Begin new stat run
             }
             if(c == 1){L_succ << "\n";}

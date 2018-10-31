@@ -72,18 +72,19 @@ void gridworld::calculate_local(multi_agent *map, monte_carlo *mcp, multi_tree *
             }
         }
         if(count == n_agents){ //If all agents have no more moves left to make, finish eval
+            i = max_lev;
             break;
         }
         for(int a = 0; a < n_agents; a++){ //Agent Number
             if(i < tp->ag_tree.at(a).tree_vec.size()){ //If level exceeds the maximum size of tree, do not calculate
-                mcp->parent_number = node_vec.at(a); //Parent is the node number of the previously selected node
+                mcp->parent_number = node_vec.at(a); //Parent is the node number of the previously selected node initially 0 for root
                 act = mcp->select_move(tp, a, i); //(agent_number, level) choose best child node
-                node_vec.at(a) = mcp->current_node; //Node selected from select move
                 if(mcp->action_check == false){
-                    ag_in_play.at(a) = false;
+                    ag_in_play.at(a) = false; //Agent is at terminal node and cannot move
                 }
-                if(mcp->action_check == true){ //If a child node was found
+                if(mcp->action_check == true && ag_in_play.at(a) == true){ //If a child node was found
                     end_lev.at(a) = i;
+                    node_vec.at(a) = mcp->current_node; //Node selected from select move
                     map->agent_move(a, act);
                     map->check_agent_status(a);
                     map->check_agent_coordinates(a);
@@ -115,18 +116,19 @@ void gridworld::calculate_global(multi_agent *map, monte_carlo *mcp, multi_tree 
             }
         }
         if(count == n_agents){ //If all agents have no more moves left to make, finish eval
+            i = max_lev;
             break;
         }
         for(int a = 0; a < n_agents; a++){ //for each agent in the system (a is agent number)
             if(i < tp->ag_tree.at(a).tree_vec.size()){ //If level exceeds the maximum size of tree, do not calculate
                 mcp->parent_number = node_vec.at(a); //Parent is the node number of the previously selected node
                 act = mcp->select_move(tp, a, i); //(agent_number, level) choose best child node
-                node_vec.at(a) = mcp->current_node; //Node selected from select move
                 if(mcp->action_check == false){ //Agent has reached terminal state in decision tree
                     ag_in_play.at(a) = false;
                 }
-                if(mcp->action_check == true){ //If a child node was found
+                if(mcp->action_check == true && ag_in_play.at(a) == true){ //If a child node was found
                     end_lev.at(a) = i;
+                    node_vec.at(a) = mcp->current_node; //Node selected from select move
                     map->agent_move(a, act);
                     map->check_agent_status(a);
                     map->check_agent_coordinates(a);
@@ -135,7 +137,7 @@ void gridworld::calculate_global(multi_agent *map, monte_carlo *mcp, multi_tree 
                         ag_in_play.at(a) = false;
                     }
                     if(map->agent_at_goal == true && map->unique_pos == false){ //Goal already captured by another agent
-                        agent_rewards.at(a) = penalty;
+                        agent_rewards.at(a) = 0;
                         ag_in_play.at(a) = false;
                     }
                     if(map->agent_at_goal == false){ //Agent is not at a goal
@@ -170,6 +172,9 @@ void gridworld::calculate_difference(multi_agent *map, monte_carlo *mcp, multi_t
 
 void gridworld::system_rollout(multi_agent *map, multi_tree *tp, monte_carlo *mcp){
     int act, count; sys_reward = 0;
+    for(int i = 0; i < agent_rewards.size(); i++){ //zero the vector at the beginning
+        agent_rewards.at(i) = 0;
+    }
     reset_all_agents(map, tp); //reset agents to starting positions
     for(int i = 1; i < max_lev; i++){ //Each Agent takes a step if able
         count = 0;
@@ -185,32 +190,31 @@ void gridworld::system_rollout(multi_agent *map, multi_tree *tp, monte_carlo *mc
             if(i < tp->ag_tree.at(a).tree_vec.size()){ //If level exceeds the maximum size of tree, do not calculate
                 mcp->parent_number = node_vec.at(a); //Parent is the node number of the previously selected node
                 act = mcp->select_move(tp, a, i); //(agent_number, level) choose best child node
-                node_vec.at(a) = mcp->current_node; //Node selected from select move
                 
                 if(mcp->action_check == false){
                     ag_in_play.at(a) = false; //Agent is at a dead end in the tree
                 }
-                
-                if(mcp->action_check == true){ //If a child node was found
+                if(mcp->action_check == true && ag_in_play.at(a) == true){ //If a child node was found
                     end_lev.at(a) = i;
+                    node_vec.at(a) = mcp->current_node; //Node selected from select move
                     map->agent_move(a, act);
                     map->check_agent_status(a);
                     map->check_agent_coordinates(a);
                     if(map->agent_at_goal == true && map->unique_pos == true){ //Agent at uncaptured goal
-                        if(ag_in_play.at(a) == true){
-                            sys_reward += goal_reward;
-                        }
+                        agent_rewards.at(a) = goal_reward;
                         ag_in_play.at(a) = false;
                     }
                     if(map->agent_at_goal == true && map->unique_pos == false){ //Agent at captured goal
-                        if(ag_in_play.at(a) == true){
-                            sys_reward += penalty;
-                        }
+                        agent_rewards.at(a) = 0;
                         ag_in_play.at(a) = false;
                     }
                 }
             }
         }
+    }
+
+    for(int i = 0; i < agent_rewards.size(); i++){ //zero the vector at the beginning
+        sys_reward += agent_rewards.at(i);
     }
 }
 

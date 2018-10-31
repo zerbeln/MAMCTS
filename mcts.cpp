@@ -34,7 +34,7 @@ void monte_carlo::mc_search(multi_tree *tp, multi_agent *map){ //4-step MCTS pro
 }
 
 int monte_carlo::select_move(multi_tree *tp, int agn, int l){ //(agent number, level)
-    int count; count = 0;
+    int count;
     double best; //Tracks best Q-value for action selection
     action_check = false;
     assert(tp->ag_tree.at(agn).tree_vec.size() > l);
@@ -42,7 +42,7 @@ int monte_carlo::select_move(multi_tree *tp, int agn, int l){ //(agent number, l
     reward_vec.clear();
     for(int i = 0; i < tp->ag_tree.at(agn).tree_vec.at(l).level_vec.size(); i++){
         if(parent_number == tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).p_number){
-            reward_vec.push_back(tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).UCB1);
+            reward_vec.push_back(tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node);
             action_check = true;
         }
     }
@@ -55,13 +55,14 @@ int monte_carlo::select_move(multi_tree *tp, int agn, int l){ //(agent number, l
     
     best = *max_element(reward_vec.begin(), reward_vec.end()); //Best Q-value from among child nodes in level
     reward_vec.clear();
-    
+    count = 0;
     for(int i = 0; i < tp->ag_tree.at(agn).tree_vec.at(l).level_vec.size(); i++){
         if(parent_number == tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).p_number){
-            if(best == tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).UCB1){
+            if(best == tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node){
                 action = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).action;
                 current_node = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).n_number; //Selected node
                 count++;
+                i = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.size();
                 break;
             }
         }
@@ -343,8 +344,7 @@ void monte_carlo::back_propagate_evals(multi_agent *map, multi_tree *tp, double 
             q_prev = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node; //Previous estimate of Q value
             tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).visit_count += 1;
             node_visit = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).visit_count;
-            //tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node = q_prev + ((q_val-q_prev)/node_visit); //Updated Q values
-            tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node = reward;
+            tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).q_node = q_prev + ((q_val-q_prev)/node_visit); //Updated Q values
             parent_number = tp->ag_tree.at(agn).tree_vec.at(l).level_vec.at(i).p_number;
             count++;
             break;

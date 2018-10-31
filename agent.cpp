@@ -135,16 +135,17 @@ void multi_agent::check_goal_coordinates(int n, double xc, double yc){ //Goal nu
 }
 
 int multi_agent::record_goal_captures(){
-    int n_captured; n_captured = 0; double x,y;
+    int n_captured; n_captured = 0; double x, y;
     for(int i = 0; i < n_agents; i++){
         x = goal_vec.at(i).goal_x;
         y = goal_vec.at(i).goal_y;
         for(int j = 0; j < n_agents; j++){
             if(x == agent_vec.at(j).agent_x && y == agent_vec.at(j).agent_y){
                 n_captured += 1;
-                break;
+                j = n_agents;
             }
         }
     }
+    assert(n_captured <= n_agents);
     return n_captured;
 }

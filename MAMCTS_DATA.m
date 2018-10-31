@@ -53,6 +53,9 @@ for i = 1:m
     L_success(i) = mean(L_runs(i,:))/num_agents;
     num_agents = num_agents + increment;
 end
+DFR = mean(D_success)*100
+GR = mean(G_success)*100
+LR = mean(L_success)*100
 
 %Standard Deviation
 err_Drate = zeros(1, m);
@@ -77,10 +80,10 @@ errorbar(X, G_rewards, err_Gsys, 'g', 'Linewidth', 2, 'markersize', 5)
 errorbar(X, L_rewards, err_Lsys, 'b', 'Linewidth', 2, 'markersize', 5)
 set(gca, 'fontsize', 12)
 xlim([0,200])
-xlabel('Generations', 'FontSize', 18, 'FontWeight', 'bold')
-ylabel('System Reward G(Z)', 'FontSize', 18, 'FontWeight', 'bold')
+xlabel('Episodes', 'FontSize', 12, 'FontWeight', 'bold')
+ylabel('System Reward G(s)', 'FontSize', 12, 'FontWeight', 'bold')
 lgd = legend('Difference', 'Global', 'Local');
-lgd.FontSize = 14;
+lgd.FontSize = 12;
 
 %MAMCTS Success Rate-------------------------------------------------------
 n_agents = [starting_agents:increment:max_agents];
@@ -94,7 +97,7 @@ errorbar(n_agents, G_success, err_Grate, 'g', 'Linewidth', 2)
 errorbar(n_agents, L_success, err_Lrate, 'b', 'Linewidth', 2)
 set(gca,'xtick', xaxis)
 set(gca, 'fontsize', 12)
-xlabel('Number of Agents', 'FontSize', 18, 'FontWeight', 'bold')
-ylabel('Goal Capture Rate', 'FontSize', 18, 'FontWeight', 'bold')
+xlabel('Number of Agents and Goals', 'FontSize', 12, 'FontWeight', 'bold')
+ylabel('Percentage of Goals Captured', 'FontSize', 12, 'FontWeight', 'bold')
 lgd = legend('Difference', 'Global', 'Local');
-lgd.FontSize = 14;
+lgd.FontSize = 12;
